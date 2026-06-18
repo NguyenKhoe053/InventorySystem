@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Kho Hàng Thất Lạc</title>
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-wrapper">
+        <div class="auth-container">
+            <div class="auth-image">
+                <div class="auth-image-content">
+                    <h2>Quản Lý Kho Hàng L&F</h2>
+                    <p>Hệ thống theo dõi và quản lý hàng hóa thất lạc hiệu quả, chuyên nghiệp dành cho doanh nghiệp.</p>
+                </div>
+            </div>
+            <div class="auth-form-container">
+                <div class="auth-header">
+                    <h3><i class="fas fa-warehouse text-primary me-2"></i> Đăng Nhập</h3>
+                    <p class="text-muted">Chào mừng bạn quay trở lại hệ thống</p>
+                </div>
+                
+                <ul class="nav nav-pills mb-4 auth-nav" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login" type="button" role="tab">Đăng Nhập</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register" type="button" role="tab">Đăng Ký</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="authTabsContent">
+                    <!-- Login -->
+                    <div class="tab-pane fade show active" id="login" role="tabpanel">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-medium text-slate-700">Tên Đăng Nhập</label>
+                                <input type="text" class="form-control" id="loginUsername" required placeholder="admin">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-medium text-slate-700">Mật Khẩu</label>
+                                <input type="password" class="form-control" id="loginPassword" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3 py-2 fw-medium">Đăng Nhập <i class="fas fa-arrow-right ms-1"></i></button>
+                        </form>
+                    </div>
+                    <!-- Register -->
+                    <div class="tab-pane fade" id="register" role="tabpanel">
+                        <form id="registerForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-medium text-slate-700">Tên Đăng Nhập</label>
+                                <input type="text" class="form-control" id="regUsername" required minlength="3" placeholder="Nhập tên tài khoản">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium text-slate-700">Mật Khẩu</label>
+                                <input type="password" class="form-control" id="regPassword" required minlength="6" placeholder="Ít nhất 6 ký tự">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-medium text-slate-700">Xác Nhận Mật Khẩu</label>
+                                <input type="password" class="form-control" id="regConfirmPassword" required minlength="6" placeholder="Nhập lại mật khẩu">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-medium">Tạo Tài Khoản Mới</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="mainApp" class="app-wrapper" style="display: none;">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><i class="fas fa-warehouse"></i></div>
+                <span class="fs-5 fw-bold">L&F System</span>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                <div class="user-info">
+                    <h6 class="mb-0 text-truncate" id="displayUsername">Loading...</h6>
+                    <small class="role-badge" id="displayRole">Role</small>
+                </div>
+            </div>
+
+            <ul class="nav flex-column sidebar-nav" id="sidebarMenu">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-target="dashboard-tab">
+                        <i class="fas fa-chart-pie"></i> <span>Tổng Quan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-target="products-tab">
+                        <i class="fas fa-boxes"></i> <span>Quản Lý Sản Phẩm</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-target="transactions-tab">
+                        <i class="fas fa-exchange-alt"></i> <span>Nhập / Xuất Kho</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-outline-light w-100 logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i> Đăng Xuất
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="topbar">
+                <h4 class="page-title" id="pageTitle">Tổng Quan Hệ Thống</h4>
+                <div class="topbar-actions">
+                    <button class="btn btn-light btn-sm text-primary fw-medium" onclick="syncOldData()" title="Khôi phục dữ liệu cũ từ trình duyệt">
+                        <i class="fas fa-cloud-upload-alt"></i> <span class="d-none d-md-inline ms-1">Đồng Bộ Dữ Liệu Cũ</span>
+                    </button>
+                    <button class="btn btn-light btn-sm" id="loadSampleBtn" onclick="loadSampleData()" title="Load Dữ Liệu Mẫu">
+                        <i class="fas fa-database text-warning"></i> <span class="d-none d-md-inline ms-1">Dữ Liệu Mẫu</span>
+                    </button>
+                    <button class="btn btn-light btn-sm" id="exportPDFBtn" onclick="exportToPDF()" title="Xuất Báo Cáo PDF">
+                        <i class="fas fa-file-pdf text-danger"></i> <span class="d-none d-md-inline ms-1">Báo Cáo PDF</span>
+                    </button>
+                    <button class="btn btn-light btn-sm" id="clearAllBtn" onclick="clearAllData()" title="Làm Sạch Dữ Liệu">
+                        <i class="fas fa-trash-alt text-secondary"></i> <span class="d-none d-md-inline ms-1">Làm Sạch</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-body">
+                <!-- Dashboard Tab -->
+                <div class="page-tab active" id="dashboard-tab">
+                    <!-- Stats Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-primary-subtle text-primary">
+                                    <i class="fas fa-boxes"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <p class="stat-label">Tổng Sản Phẩm</p>
+                                    <h3 class="stat-value" id="totalProducts">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-success-subtle text-success">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <p class="stat-label">Tổng Giá Trị Tồn</p>
+                                    <h3 class="stat-value" id="totalValue">0 ₫</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-warning-subtle text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <p class="stat-label">Hàng Sắp Hết</p>
+                                    <h3 class="stat-value" id="lowStock">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-danger-subtle text-danger">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <p class="stat-label">Đã Hết Hàng</p>
+                                    <h3 class="stat-value" id="outOfStock">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-8">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white border-0 pt-4 pb-0">
+                                    <h6 class="fw-semibold mb-0 text-slate-800">Biểu Đồ Giá Trị Tồn Kho (Top 10)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container" style="position: relative; height:300px; width:100%">
+                                        <canvas id="stockChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white border-0 pt-4 pb-0">
+                                    <h6 class="fw-semibold mb-0 text-slate-800">Phân Bố Trạng Thái</h6>
+                                </div>
+                                <div class="card-body d-flex align-items-center justify-content-center">
+                                    <div class="chart-container" style="position: relative; height:250px; width:100%">
+                                        <canvas id="statusChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Tab -->
+                <div class="page-tab" id="products-tab" style="display: none;">
+                    <div class="card border-0 shadow-sm table-card">
+                        <div class="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                            <div class="d-flex flex-column flex-md-row gap-3 flex-grow-1 me-md-3">
+                                <div class="input-group search-group flex-grow-1">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0 bg-light" id="searchInput" placeholder="Tìm kiếm mã, tên sản phẩm..." onkeyup="handleSearchInput()">
+                                </div>
+                                <select class="form-select flex-grow-1" id="filterStatus" onchange="filterProducts()">
+                                    <option value="">Tất Cả Trạng Thái</option>
+                                    <option value="Đầy Đủ">Đầy Đủ</option>
+                                    <option value="Sắp Hết">Sắp Hết</option>
+                                    <option value="Hết Hàng">Hết Hàng</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary text-nowrap flex-shrink-0" id="addProductBtn" data-bs-toggle="modal" data-bs-target="#productModal" onclick="resetProductForm()">
+                                <i class="fas fa-plus me-1"></i> Thêm Sản Phẩm
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 custom-table" id="productsTable">
+                                    <thead class="table-light text-slate-600">
+                                        <tr>
+                                            <th class="ps-4">Mã SP</th>
+                                            <th>Tên Sản Phẩm</th>
+                                            <th>Số Lượng</th>
+                                            <th>Giá Nhập</th>
+                                            <th>Giá Bán</th>
+                                            <th>Trạng Thái</th>
+                                            <th class="text-end pe-4 action-col">Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsBody">
+                                        <!-- Rendered via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white p-3 border-top d-flex justify-content-between align-items-center">
+                            <small class="text-slate-500" id="tableInfo">Đang tải...</small>
+                            <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="page-tab" id="transactions-tab" style="display: none;">
+                    <div class="card border-0 shadow-sm table-card">
+                        <div class="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-slate-600 fw-medium text-nowrap"><i class="far fa-calendar-alt me-1"></i> Ngày:</span>
+                                <input type="date" class="form-control w-auto" id="dateFilter" onchange="filterTransactions()">
+                                <button class="btn btn-light" onclick="document.getElementById('dateFilter').value=''; filterTransactions();" title="Xóa bộ lọc ngày"><i class="fas fa-times text-muted"></i></button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success" id="importBtn" data-bs-toggle="modal" data-bs-target="#transactionModal" onclick="setTransactionType('import')">
+                                    <i class="fas fa-arrow-down me-1"></i> Nhập Kho
+                                </button>
+                                <button class="btn btn-danger" id="exportBtn" data-bs-toggle="modal" data-bs-target="#transactionModal" onclick="setTransactionType('export')">
+                                    <i class="fas fa-arrow-up me-1"></i> Xuất Kho
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 custom-table" id="transactionsTable">
+                                    <thead class="table-light text-slate-600">
+                                        <tr>
+                                            <th class="ps-4">Ngày/Giờ</th>
+                                            <th>Mã SP</th>
+                                            <th>Tên Sản Phẩm</th>
+                                            <th>Loại Giao Dịch</th>
+                                            <th>Số Lượng</th>
+                                            <th>Người TH</th>
+                                            <th class="pe-4">Ghi Chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionsBody">
+                                        <!-- Rendered via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Product Modal -->
+    <div class="modal fade custom-modal" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold text-slate-800" id="productModalTitle">Thêm Sản Phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="productForm">
+                        <input type="hidden" id="editProductId">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-slate-700">Mã Sản Phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="productCode" required placeholder="VD: SP001" maxlength="20">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-slate-700">Tên Sản Phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="productName" required placeholder="Nhập tên sản phẩm">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-medium text-slate-700">Giá Nhập (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="productImportPrice" min="0" required placeholder="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-medium text-slate-700">Giá Bán (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="productSellPrice" min="0" required placeholder="0">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light rounded-bottom">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy Bỏ</button>
+                    <button type="button" class="btn btn-primary px-4" id="saveProductBtn" onclick="saveProduct()">Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal fade custom-modal" id="transactionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold text-slate-800" id="transactionModalTitle">Nhập Kho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="transactionForm">
+                        <input type="hidden" id="transactionType">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-slate-700">Sản Phẩm <span class="text-danger">*</span></label>
+                            <select class="form-select" id="transactionProduct" required onchange="updateQuantityLimit()">
+                                <option value="">-- Chọn Sản Phẩm --</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-slate-700">Số Lượng <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="transactionQuantity" min="1" required placeholder="Nhập số lượng">
+                            <small id="quantityLimit" class="text-muted d-block mt-1"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium text-slate-700">Ghi Chú</label>
+                            <textarea class="form-control" id="transactionNote" rows="2" placeholder="Lý do nhập/xuất... (Tùy chọn)"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light rounded-bottom">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy Bỏ</button>
+                    <button type="button" class="btn btn-primary px-4" id="saveTransactionBtn" onclick="saveTransaction()">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF & autotable for Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
