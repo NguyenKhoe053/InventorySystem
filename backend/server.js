@@ -75,13 +75,14 @@ app.get('/api/init-db', async (req, res) => {
         `);
         
         try {
-            await pool.query("INSERT INTO Users (username, password, role) VALUES ('admin', '123456', 'admin')");
+            await pool.query("INSERT INTO Users (username, password, role) VALUES ('admin', '0899545788', 'admin')");
             await pool.query("INSERT INTO Users (username, password, role) VALUES ('manager', 'manager123', 'manager')");
         } catch(e) {
-            // Đã có user
+            // Nếu đã có user thì Cập nhật lại mật khẩu admin
+            await pool.query("UPDATE Users SET password = '0899545788' WHERE username = 'admin'");
         }
         
-        res.send("<h1>✅ Khởi tạo Database thành công!</h1><p>Bạn có thể quay lại trang chủ để Đăng nhập bằng tài khoản admin - 123456</p>");
+        res.send("<h1>✅ Khởi tạo & Cập nhật Database thành công!</h1><p>Bạn có thể quay lại trang chủ để Đăng nhập bằng tài khoản admin - mật khẩu: 0899545788</p>");
     } catch (err) {
         res.status(500).send("Lỗi khởi tạo DB: " + err.message);
     }
