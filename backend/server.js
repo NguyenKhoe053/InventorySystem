@@ -8,10 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Phục vụ các file tĩnh (HTML, CSS, JS) từ thư mục cha
+// Phục vụ giao diện Frontend
 app.use(express.static(path.join(__dirname, '../')));
 
-// Cấu hình kết nối MySQL
+const isAiven = (process.env.DB_HOST || '').includes('aivencloud');
+
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
@@ -20,7 +21,8 @@ const dbConfig = {
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: isAiven ? { rejectUnauthorized: false } : undefined
 };
 
 let pool;
@@ -31,10 +33,59 @@ async function connectDB() {
         console.log('✅ Connected to MySQL Server successfully!');
         connection.release();
     } catch (err) {
-        console.error('❌ Database connection failed! Vui lòng kiểm tra lại MySQL đã bật chưa và mật khẩu đúng chưa.', err.message);
+        console.error('❌ Database connection failed!', err.message);
     }
 }
 connectDB();
+
+// ==========================================
+// 0. KHỞI TẠO DATABASE TỰ ĐỘNG CHO CLOUD
+// ==========================================
+app.get('/api/init-db', async (req, res) => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS Users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                role VARCHAR(20) DEFAULT 'viewer'
+            )
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS Products (
+                id VARCHAR(50) PRIMARY KEY,
+                code VARCHAR(20) UNIQUE NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                importPrice DECIMAL(18, 2) DEFAULT 0,
+                sellPrice DECIMAL(18, 2) DEFAULT 0,
+                quantity INT DEFAULT 0
+            )
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS Transactions (
+                id VARCHAR(50) PRIMARY KEY,
+                date DATETIME NOT NULL,
+                productId VARCHAR(50),
+                type VARCHAR(10) NOT NULL,
+                quantity INT NOT NULL,
+                note TEXT,
+                user_name VARCHAR(50),
+                FOREIGN KEY (productId) REFERENCES Products(id) ON DELETE CASCADE
+            )
+        `);
+        
+        try {
+            await pool.query("INSERT INTO Users (username, password, role) VALUES ('admin', '123456', 'admin')");
+            await pool.query("INSERT INTO Users (username, password, role) VALUES ('manager', 'manager123', 'manager')");
+        } catch(e) {
+            // Đã có user
+        }
+        
+        res.send("<h1>✅ Khởi tạo Database thành công!</h1><p>Bạn có thể quay lại trang chủ để Đăng nhập bằng tài khoản admin - 123456</p>");
+    } catch (err) {
+        res.status(500).send("Lỗi khởi tạo DB: " + err.message);
+    }
+});
 
 // ==========================================
 // 1. AUTHENTICATION API
@@ -166,9 +217,6 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
-// ==========================================
-// 4. UTILITIES (LOAD SAMPLE DATA)
-// ==========================================
 app.post('/api/load-sample', async (req, res) => {
     try {
         await pool.execute('DELETE FROM Transactions');
@@ -177,9 +225,7 @@ app.post('/api/load-sample', async (req, res) => {
         const sampleProducts = [
             { id: '1', code: 'SP001', name: 'Laptop Dell XPS 15', importPrice: 25000000, sellPrice: 28000000, quantity: 15 },
             { id: '2', code: 'SP002', name: 'Chuột Không Dây Logitech MX', importPrice: 1200000, sellPrice: 1800000, quantity: 50 },
-            { id: '3', code: 'SP003', name: 'Bàn Phím Cơ Keychron', importPrice: 1500000, sellPrice: 2000000, quantity: 8 },
-            { id: '4', code: 'SP004', name: 'Màn Hình LG 27 inch 4K', importPrice: 6000000, sellPrice: 7500000, quantity: 0 },
-            { id: '5', code: 'SP005', name: 'Tai Nghe Sony WH-1000XM5', importPrice: 6500000, sellPrice: 7990000, quantity: 2 }
+            { id: '3', code: 'SP003', name: 'Bàn Phím Cơ Keychron', importPrice: 1500000, sellPrice: 2000000, quantity: 8 }
         ];
         
         for (let p of sampleProducts) {
@@ -188,21 +234,6 @@ app.post('/api/load-sample', async (req, res) => {
                 [p.id, p.code, p.name, p.importPrice, p.sellPrice, p.quantity]
             );
         }
-        
-        const now = new Date();
-        const transactions = [
-            { id: 't1', date: new Date(now - 86400000*3), productId: '1', type: 'import', quantity: 20, note: 'Nhập lô hàng đầu tháng', user: 'admin' },
-            { id: 't2', date: new Date(now - 86400000*2), productId: '1', type: 'export', quantity: 5, note: 'Xuất kho cho dự án A', user: 'manager' },
-            { id: 't4', date: now, productId: '2', type: 'import', quantity: 50, note: 'Bổ sung tồn kho', user: 'admin' }
-        ];
-
-        for (let t of transactions) {
-            await pool.execute(
-                `INSERT INTO Transactions (id, date, productId, type, quantity, note, user_name) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [t.id, t.date, t.productId, t.type, t.quantity, t.note, t.user]
-            );
-        }
-
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -222,5 +253,4 @@ app.post('/api/clear-all', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
-    console.log(`🌐 Bạn có thể truy cập hệ thống tại: http://localhost:${PORT}`);
 });

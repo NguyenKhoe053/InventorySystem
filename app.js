@@ -1,5 +1,5 @@
 // app.js - Full-stack Edition with Backend API Integration
-const API_BASE_URL = (window.location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api';
+const API_BASE_URL = '/api';
 
 let products = [];
 let transactions = [];
