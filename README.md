@@ -22,13 +22,13 @@ Hệ thống quản lý kho hàng toàn diện (Full-stack) được xây dựng
 - **Deployment:** Render.com (Serverless).
 
 ## 💡 Tài Khoản Trải Nghiệm (Demo Accounts)
-Bạn có thể truy cập hệ thống và sử dụng các tài khoản sau để trải nghiệm các quyền hạn khác nhau:
+Truy cập hệ thống và sử dụng các tài khoản sau để trải nghiệm các quyền hạn khác nhau:
 - **Tài khoản Admin** (Toàn quyền): `admin` / Mật khẩu: `0899545788`
 - **Tài khoản Quản lý** (Không thể xóa): `manager` / Mật khẩu: `manager123`
 - **Tài khoản Khách** (Chỉ xem): Bạn có thể tự Đăng ký tài khoản mới trên giao diện.
 
 ## 💻 Cài Đặt Tại Local (Local Setup)
-Nếu bạn muốn chạy dự án này trên máy tính cá nhân:
+Muốn chạy dự án này trên máy tính cá nhân:
 1. Clone repository này về máy.
 2. Mở thư mục `backend`, chạy lệnh `npm install` để cài thư viện.
 3. Điền thông tin Database MySQL vào file `.env` (Hoặc import file `database.sql` vào MySQL cục bộ).
