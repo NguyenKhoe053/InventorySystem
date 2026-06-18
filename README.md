@@ -36,4 +36,4 @@ Muốn chạy dự án này trên máy tính cá nhân:
 5. Truy cập `http://localhost:3000` trên trình duyệt.
 
 ---
-*Dự án được phát triển nhằm mục đích tối ưu hóa quy trình quản lý kho bãi, giảm thiểu sai sót và tăng hiệu suất làm việc.*
+*Dự án được phát triển nhằm mục đích tối ưu hóa quy trình quản lý kho bãi, giảm thiểu sai sót và tăng hiệu suất làm việc*
