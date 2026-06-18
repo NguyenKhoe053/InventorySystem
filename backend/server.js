@@ -28,7 +28,11 @@ const dbConfig = {
 let pool;
 async function connectDB() {
     try {
-        pool = mysql.createPool(dbConfig);
+        if (process.env.DB_URI) {
+            pool = mysql.createPool(process.env.DB_URI + "?ssl-mode=REQUIRED");
+        } else {
+            pool = mysql.createPool(dbConfig);
+        }
         const connection = await pool.getConnection();
         console.log('✅ Connected to MySQL Server successfully!');
         connection.release();
