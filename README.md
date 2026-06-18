@@ -1,6 +1,6 @@
 # L&F Inventory Management System 📦
 
-![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://inventorysystem-bpht.onrender.com)
 ![Node.js](https://img.shields.io/badge/Node.js-Backend-success)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-blue)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple)
