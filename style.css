@@ -219,3 +219,8 @@ body {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
 }
+
+/* Utilities */
+.bg-slate-100 { background-color: var(--slate-100) !important; }
+.text-slate-700 { color: var(--slate-700) !important; }
+.text-slate-800 { color: var(--slate-800) !important; }
